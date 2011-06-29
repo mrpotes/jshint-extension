@@ -1,0 +1,55 @@
+<!doctype html>
+<head>
+<script src="jshint.js"></script>
+<script type="text/javascript">
+
+
+/**
+ * @param {Array} scripts an array of script infos to validate
+ * @returns {Array} of arrays containing errors for each script
+ */
+function validate(scripts) {
+  var validation = [];
+  scripts.forEach(function(script) {
+    validation.push(validateScript(script));
+  });
+
+  console.log('all scripts validated', validation);
+  return validation;
+}
+
+function validateScript(scriptInfo) {
+  var errors = [];
+  var isValid = JSHINT(scriptInfo.contents);
+  if (!isValid) {
+    JSHINT.errors.forEach(function(error) {
+      if (error === null) {
+        // Why does JSHINT return a null terminated array?
+        return;
+      }
+      error.url = scriptInfo.src;
+      errors.push(error);
+    });
+  }
+
+  return errors;
+}
+
+chrome.extension.onRequest.addListener(function(request, sender, callback) {
+  chrome.tabs.getSelected(null, function(tab) {
+    chrome.tabs.executeScript(tab.id, {file: 'content.js'}, function() {
+      chrome.tabs.sendRequest(tab.id, {}, function(response) {
+        if (response.error) {
+          // Something bad. Pass error up the chain.
+          callback({error: response.error});
+          return;
+        }
+        callback({files: validate(response.scripts)});
+      });
+    });
+  });
+});
+
+</script>
+</head>
+</html>
