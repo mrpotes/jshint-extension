@@ -42,8 +42,8 @@ category.onAuditStarted.addListener(function callback(auditResults) {
         var error = errors[j];
         isError = true;
         // Use custom audit formatter if available
-        if (auditResults.asset) {
-          errorResult.addChild(auditResults.asset(error.url, error.line));
+        if (auditResults.createResourceLink) {
+          errorResult.addChild(auditResults.createResourceLink(error.url, error.line));
         }
         errorResult.addChild(formatError(error));
       }
