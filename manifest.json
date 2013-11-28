@@ -1,13 +1,10 @@
 {
-  "name": "Javascript Validator",
+  "manifest_version": 2,
+  "name": "JSHint for Chrome Dev Tools",
   "version": "1.0",
-  "description": "Extends the Developer Tools, adding an audit category that validates javascript on the inspected page.",
-  "background_page": "background.html",
+  "description": "When saving a JavaScript source file, JSHint is run on the new contents.",
   "devtools_page": "devtools.html",
   "permissions":  [
-    "experimental",
-    "tabs",
-    "http://*/*",
-    "https://*/*"
+    "experimental"
   ]
 }
