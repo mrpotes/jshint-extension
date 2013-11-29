@@ -9,6 +9,8 @@ function validateScript(content, url) {
       }
       chrome.experimental.devtools.console.addMessage(chrome.experimental.devtools.console.Severity.Error, error.reason, url, error.line);
     });
+  } else {
+    chrome.experimental.devtools.console.addMessage(chrome.experimental.devtools.console.Severity.Log, "JSHint: No errors", url);
   }
 }
 
