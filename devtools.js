@@ -21,3 +21,10 @@ chrome.devtools.inspectedWindow.onResourceContentCommitted.addListener(function(
   }
 });
 
+chrome.devtools.panels.create(
+    'JS Hint',
+    null, // No icon path
+    'settings/panel.html',
+    null // no callback needed
+);
+
