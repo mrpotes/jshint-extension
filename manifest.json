@@ -7,5 +7,7 @@
   "permissions":  [
     "experimental"
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  "sandbox": {
+    "pages": ["settings/sandbox.html"]
+  }
 }

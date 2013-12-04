@@ -1,6 +1,17 @@
 
+function getOptions() {
+  var options = {}, option, key;
+  for (key in localStorage) {
+    if (key.indexOf("settings-") === 0) {
+      option = JSON.parse(localStorage[key]);
+      options[option.key] = option.value;
+    }
+  }
+  return options;
+}
+
 function validateScript(content, url) {
-  var isValid = JSHINT(content, {});
+  var isValid = JSHINT(content, getOptions());
   if (!isValid) {
     JSHINT.errors.forEach(function(error) {
       if (error === null) {

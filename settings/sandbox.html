@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+      }
+      
+      ul {
+        padding-left: 0px;
+      }
+      li {
+        list-style: none;
+        display: inline-block;
+        width: 250px;
+        margin: 0 15px 15px 0;
+        padding: 2px;
+        border: 1px solid lightgrey;
+      }
+      div.description {
+        width: 200px;
+        position: absolute;
+        padding: 10px;
+        background: lightyellow;
+        border: 1px solid gold;
+        display: none;
+      }
+      a:hover + div.description {
+        display: block;
+      }
+      input {
+        float: right;
+      }
+      input[type=text] {
+        width: 125px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Settings</h1>
+
+    <div id="settings">
+      <h2>Boolean settings</h2>
+      <ul data-bind="foreach: settings">
+        <!-- ko if: type === 'boolean' -->
+        <li>
+          <input type="checkbox" data-bind="checked: value"/>
+          <a target="_blank" data-bind="text: key, attr: { href: 'http://www.jshint.com/docs/options/#' + key }"></span>
+          <div class="description" data-bind="text: comment"></div>
+        </li>
+        <!-- /ko -->
+      </ul>
+      <h2>Value settings</h2>
+      <ul data-bind="foreach: settings">
+        <!-- ko if: type === 'value' -->
+        <li>
+          <input type="text" data-bind="value: value"/>
+          <a target="_blank" data-bind="text: key, attr: { href: 'http://www.jshint.com/docs/options/#' + key }"></span>
+          <div class="description" data-bind="text: comment"></div>
+        </li>
+        <!-- /ko -->
+      </ul>
+    </div>
+    <script src="knockout-3.0.0.js"></script>
+    <script src="jquery-2.0.3.min.js"></script>
+    <script src="sandbox.js"></script>
+  </body>
+</html>
