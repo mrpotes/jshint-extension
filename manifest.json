@@ -1,9 +1,11 @@
 {
   "manifest_version": 2,
-  "name": "JSHint for Chrome Dev Tools",
+  "name": "JSHint for Dev Tools",
   "version": "1.0",
-  "description": "When saving a JavaScript source file, JSHint is run on the new contents.",
+  "description": "When saving a JavaScript source file from the DevTools Source pane, JSHint is run on the new contents.",
   "devtools_page": "devtools.html",
+  "homepage_url": "https://github.com/mrpotes/jshint-extension",
+  "icons": {"128": "jshint-icon.png"},
   "permissions":  [
     "experimental"
   ],

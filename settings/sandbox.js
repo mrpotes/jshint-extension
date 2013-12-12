@@ -1,26 +1,41 @@
+var ko = ko || {};
+
 function ViewModel() {
-  var self = this, key;
+  var self = this;
   
   this.settings = ko.observableArray([]);
   
   this._store = function(newValue) {
     var setting = ko.utils.extend({}, newValue);
-    setting.value = setting.value();
-    window.parent.postMessage({ key: newValue.key, value: ko.utils.stringifyJson(setting) }, "*")
+    setting.value = setting._value();
+    window.parent.postMessage({ key: newValue.key, value: ko.utils.stringifyJson(setting) }, "*");
   };
   
   this._subscribeStore = function(setting) {
-    return function(newValue) {
-      setting.value(setting.type === "value" && newValue === "" ? false : newValue);
+    return function() {
       self._store(setting);
     };
   };
  
-  this._addSetting = function(setting) {
-    setting.value = ko.observable(setting.value);
-    setting.value.subscribe(this._subscribeStore(setting));
+  this._addSetting = function(setting, needsStoring) {
+    setting._value = ko.observable(setting.value);
+    if (setting.type === 'boolean') {
+      setting.value = setting._value;
+    } else {
+      setting.value = ko.computed({
+        read: function() {
+          return setting._value() === false ? '' : setting._value();
+        },
+        write: function(value) {
+          setting._value(value.trim() === '' ? false : value);
+        }
+      });
+    }
+    setting._value.subscribe(this._subscribeStore(setting));
     this.settings.push(setting);
-    this._store(setting);
+    if (needsStoring) {
+      this._store(setting);
+    }
   };
  
   this.optionDefinition = /^\s+([a-z]+)\s*:\s+(true|false),?\s*(\/\/(.+))?$/;
@@ -33,7 +48,9 @@ function ViewModel() {
     for (i = 0; i < lines.length; i++) {
       line = lines[i];
       if (this.optionDefinition.test(line)) {
-        if (settingkey) options[settingkey] = setting;
+        if (settingkey) {
+          options[settingkey] = setting;
+        }
         setting = {};
         components = this.optionDefinition.exec(line);
         setting.value = components[2] === "true";
@@ -41,7 +58,9 @@ function ViewModel() {
         settingkey = components[1];
       } else if (this.commentContinuation.test(line)) {
         components = this.commentContinuation.exec(line);
-        if (components[1] !== "Obsolete options") setting.comment += " " + components[1];
+        if (components[1] !== "Obsolete options") {
+          setting.comment += " " + components[1];
+        }
       }
     }
     options[settingkey] = setting;
@@ -52,24 +71,25 @@ function ViewModel() {
     var i, setting;
     for (i = 0; i < settings.length; i++) {
       setting = ko.utils.extend({}, settings[i]);
-      setting.value = ko.observable(setting.value);
-      this.settings.push(setting);
+      this._addSetting(setting);
     }
-    if (this.settings().length === 0) {
-      $.get("../jshint.js").done(function(data, status, jqxhr) {
-        var text = jqxhr.responseText,
-            startDeclaration, boolOptions, valOptions, opt, lastoption, setting;
-        startDeclaration = text.indexOf("boolOptions = {");
-        boolOptions = self.parseOptions(text.substring(startDeclaration, text.indexOf("},", startDeclaration) + 1));
-        startDeclaration = text.indexOf("valOptions = {", startDeclaration);
-        valOptions = self.parseOptions(text.substring(startDeclaration, text.indexOf("},", startDeclaration) + 1));
-        for (opt in boolOptions) {
-          self._addSetting({ key: opt, value: boolOptions[opt].value, type: 'boolean', comment: boolOptions[opt].comment });
-        }
-        for (opt in valOptions) {
-          self._addSetting({ key: opt, value:  valOptions[opt].value, type: 'value', comment: valOptions[opt].comment });
-        }
-      });
+  }
+  
+  this.createSettings = function(text) {
+    var startDeclaration, boolOptions, valOptions, opt;
+    startDeclaration = text.indexOf("boolOptions = {");
+    boolOptions = self.parseOptions(text.substring(startDeclaration, text.indexOf("},", startDeclaration) + 1));
+    startDeclaration = text.indexOf("valOptions = {", startDeclaration);
+    valOptions = self.parseOptions(text.substring(startDeclaration, text.indexOf("},", startDeclaration) + 1));
+    for (opt in boolOptions) {
+      if (boolOptions.hasOwnProperty(opt)) {
+        self._addSetting({ key: opt, value: boolOptions[opt].value, type: 'boolean', comment: boolOptions[opt].comment }, true);
+      }
+    }
+    for (opt in valOptions) {
+      if (valOptions.hasOwnProperty(opt)) {
+        self._addSetting({ key: opt, value: valOptions[opt].value, type: 'value', comment: valOptions[opt].comment }, true);
+      }
     }
   };
   
@@ -82,6 +102,10 @@ window.addEventListener(
     if (event.data.settings) {
       viewModel = new ViewModel();
       viewModel.setSettings(event.data.settings);
+      ko.applyBindings(viewModel, document.getElementById("settings"));
+    } else if (event.data.settingsText) {
+      viewModel = new ViewModel();
+      viewModel.createSettings(event.data.settingsText);
       ko.applyBindings(viewModel, document.getElementById("settings"));
     }
   },

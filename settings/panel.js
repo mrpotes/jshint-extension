@@ -1,4 +1,4 @@
-var key, setting, 
+var key,
     settings = [];
 
 for (key in localStorage) {
@@ -13,7 +13,13 @@ window.addEventListener(
     if (event.data.key && event.data.value) {
       localStorage["settings-"+event.data.key] = event.data.value;
     } else if (event.data.ready) {
-      appWindow.postMessage({ settings: settings }, "*");
+      if (settings.length > 0) {
+        appWindow.postMessage({ settings: settings }, "*");
+      } else {
+        $.get("../jshint.js").done(function(data, status, jqxhr) {
+          appWindow.postMessage({ settingsText: jqxhr.responseText }, "*");
+        });
+      }
     }
   },
   false

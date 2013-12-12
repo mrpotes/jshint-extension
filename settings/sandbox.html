@@ -3,6 +3,7 @@
     <style>
       body {
         font-family: 'Segoe UI', Tahoma, sans-serif;
+        background: white;
       }
       
       ul {
@@ -36,32 +37,30 @@
     </style>
   </head>
   <body>
-    <h1>Settings</h1>
-
     <div id="settings">
       <h2>Boolean settings</h2>
       <ul data-bind="foreach: settings">
         <!-- ko if: type === 'boolean' -->
         <li>
           <input type="checkbox" data-bind="checked: value"/>
-          <a target="_blank" data-bind="text: key, attr: { href: 'http://www.jshint.com/docs/options/#' + key }"></span>
+          <a target="_blank" data-bind="text: key, attr: { href: 'http://www.jshint.com/docs/options/#' + key }"></a>
           <div class="description" data-bind="text: comment"></div>
         </li>
         <!-- /ko -->
       </ul>
       <h2>Value settings</h2>
+      <p>Empty values will mean JavaScript 'false'</p>
       <ul data-bind="foreach: settings">
         <!-- ko if: type === 'value' -->
         <li>
           <input type="text" data-bind="value: value"/>
-          <a target="_blank" data-bind="text: key, attr: { href: 'http://www.jshint.com/docs/options/#' + key }"></span>
+          <a target="_blank" data-bind="text: key, attr: { href: 'http://www.jshint.com/docs/options/#' + key }"></a>
           <div class="description" data-bind="text: comment"></div>
         </li>
         <!-- /ko -->
       </ul>
     </div>
     <script src="knockout-3.0.0.js"></script>
-    <script src="jquery-2.0.3.min.js"></script>
     <script src="sandbox.js"></script>
   </body>
 </html>
