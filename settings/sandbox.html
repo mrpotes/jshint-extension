@@ -5,7 +5,6 @@
         font-family: 'Segoe UI', Tahoma, sans-serif;
         background: white;
       }
-      
       ul {
         padding-left: 0px;
       }
@@ -16,8 +15,9 @@
         margin: 0 15px 15px 0;
         padding: 2px;
         border: 1px solid lightgrey;
+        position: relative;
       }
-      div.description {
+      .description {
         width: 200px;
         position: absolute;
         padding: 10px;
@@ -25,7 +25,7 @@
         border: 1px solid gold;
         display: none;
       }
-      a:hover + div.description {
+      a:hover + .description {
         display: block;
       }
       input {
@@ -33,6 +33,9 @@
       }
       input[type=text] {
         width: 125px;
+      }
+      .values .description {
+        bottom: 30px;
       }
     </style>
   </head>
@@ -50,7 +53,7 @@
       </ul>
       <h2>Value settings</h2>
       <p>Empty values will mean JavaScript 'false'</p>
-      <ul data-bind="foreach: settings">
+      <ul data-bind="foreach: settings" class="values">
         <!-- ko if: type === 'value' -->
         <li>
           <input type="text" data-bind="value: value"/>
